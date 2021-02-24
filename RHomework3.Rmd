@@ -1,0 +1,51 @@
+---
+title: "RHomework3"
+author: "Sadiq Rahman"
+date: "24/02/2021"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+stroop <- read_csv("stroop_standing_data.csv")
+```
+
+The data in it's current form is *very* messy. 
+
+```{r}
+stroop <- mutate(stroop, rt = as.numeric(rt))
+stroop <- filter(stroop, rt > 0)
+```
+
+We start by mutating reaction to a numerical value, not a categorical value.
+By doing so, we can now omit all data where RT was not recorded (rt = FALSE)
+
+```{r}
+stroop <- filter(stroop, phase != "practice")
+```
+
+Then, we omit all practice trials.
+
+```{r}
+stroop <- filter(stroop, correct < 2)
+```
+
+Next, we omit all mistrials (correct = 999).
+
+```{r}
+stroop <- mutate(stroop, X11 = as.numeric(X11))
+stroop <- stroop[,-11]
+```
+
+Finally, by changing the X11 to numeric (from logical) we can see that it is simply a copy of RT.
+We can proceed by omitting the whole column as it is unnecassary. We now have uncluttered, understandable data.
+
+
+
+
+
+
