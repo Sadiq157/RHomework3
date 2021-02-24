@@ -1,2 +1,5 @@
 # RHomework3
- Third R Homework
+
+- 24/02/21 - 
+
+Started the homework. Loaded the data in and tidied it up.
