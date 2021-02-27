@@ -6,46 +6,45 @@ output: html_document
 ---
 
 
-```{r}
+```{r message = FALSE}
 library(tidyverse)
 library(factoextra)
 ```
 
-```{r}
+```{r message = FALSE, warning = FALSE}
 stroop <- read_csv("stroop_standing_data.csv")
 ```
 
-The data in it's current form is *very* messy. 
+The data in it's current form is *very* messy.
+We can start by mutating reaction time to a numerical value, not a categorical value.
+By doing so, we can  omit all data where RT was not recorded (rt = FALSE)
 
-```{r}
+```{r, warning = FALSE}
 stroop <- mutate(stroop, rt = as.numeric(rt))
 stroop <- filter(stroop, rt > 0)
-```
-
-We start by mutating reaction time to a numerical value, not a categorical value.
-By doing so, we can now omit all data where RT was not recorded (rt = FALSE)
-
-```{r}
-stroop <- filter(stroop, phase != "practice")
 ```
 
 Then, we omit all practice trials.
 
 ```{r}
-stroop <- filter(stroop, correct < 2)
+stroop <- filter(stroop, phase != "practice")
 ```
 
 Next, we omit all mistrials (correct = 999).
 
 ```{r}
-stroop <- mutate(stroop, X11 = as.numeric(X11))
-stroop <- stroop[,-11]
+stroop <- filter(stroop, correct < 2)
 ```
 
 Finally, by changing the variable X11 to numeric (from logical) we can see that it is simply a copy of RT.
 We can proceed by omitting the whole column as it is unnecassary. We now have uncluttered, understandable data.
 
 ```{r}
+stroop <- mutate(stroop, X11 = as.numeric(X11))
+stroop <- stroop[,-11]
+```
+
+```{r message = FALSE}
 stroop %>%
 group_by(phase, congruency) %>%
 summarise(
@@ -61,7 +60,7 @@ take longer to react than the congruent and baseline condition. There doesn't ap
 effect of phase on reaction time, congruency, or proportion correct.
 
 A linear model can determine whether there is a significant difference in reaction time between participants
-who were standing vs when they were sitting. 
+who were standing vs sitting. 
 
 ```{r}
 stroop_phase <- lm(rt ~ phase, stroop)
@@ -78,13 +77,12 @@ summary(stroop_condition)
 ```
 
 
-Linking this back to the original study who showed a smaller stroop effect when participants performed the task standing than when sitting,
-(i.e, greater stroop effect when sitting than when standing, so greater reaction time when sitting versus standing), the replication study found no significant difference in the stroop effect whether participants were standing or when they were sitting.
+Linking this back to the original study which found a smaller stroop effect when participants performed the task standing than when sitting (i.e, greater stroop effect when sitting than when standing, so greater reaction time when sitting versus standing), the replication study found no significant difference in the stroop effect whether participants were standing or when they were sitting.
 The replication study did however, find a significant difference in the stroop effect depending on whether participants started
-sitting down or standing up. They found participants showed significant lower reaction time if they started sitting (rt = 819) 
+sitting down or standing up. Participants showed significant lower reaction time if they started sitting (rt = 819) 
 compared to participants who started standing (rt = 819 + 22 = 841; p < .05).
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 Spotify <- read_csv("regional-global-daily-latest.csv")
 ```
 
@@ -114,10 +112,10 @@ The Spotify data is currently all categorical. To do a PCA, we would need to cha
 We would also need to remove categories which are not of interest.
 
 ```{r}
-Spotify_of_interest <- select(Spotify, -Artist, -'Track Name')
-Spotify_of_interest <- mutate(Spotify_of_interest, Position = as.numeric(Position), 
+Spotify <- select(Spotify, -Artist, -'Track Name')
+Spotify <- mutate(Spotify, Position = as.numeric(Position), 
                   Streams = as.numeric(Streams))
-PCA <- prcomp(Spotify_of_interest)
+PCA <- prcomp(Spotify)
 summary(PCA)
 fviz_pca_var(PCA)
 ```
@@ -125,3 +123,15 @@ fviz_pca_var(PCA)
 What we can see is that Position explains 100% of the variance. The writer is correct, as 99% of the variance can be explained with two
 dimensions, but at the same time, the author is wrong as it only required one dimension to explain 100% of the variance.
 The second dimension (Streams) did not contribute to the variance.
+
+
+
+
+
+
+
+
+
+
+
+
