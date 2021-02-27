@@ -13,3 +13,8 @@ Linear model fitted
 Loaded in Spotify data and tidied it up. Attempted PCA.
 Questionable results - could be wrong(?)
 
+
+- 27/02/21 - 
+
+Grammatical checks. Fixed rMarkdown output so it doesn't show 
+absolutely everything.
