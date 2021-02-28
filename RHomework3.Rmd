@@ -46,7 +46,7 @@ stroop <- stroop[,-11]
 
 ```{r message = FALSE}
 stroop %>%
-group_by(phase, congruency, subject) %>%
+group_by(phase, congruency) %>%
 summarise(
 rt = mean(rt),
 n = n(),
@@ -60,11 +60,11 @@ take longer to react than the congruent and baseline condition. There doesn't ap
 effect of phase on reaction time, congruency, or proportion correct.
 
 ```{r}
-boxplot(rt ~ congruency, summary_stroop)
+boxplot(rt ~ congruency, stroop)
 ```
 
-The boxplot shows that the on average, the reaction time in the congruent and the baseline condition are practically the same.
-Incongruent shows the greatest reaction time, as expected. The variance across the three condition appears similar.
+The boxplot shows that the on average, the reaction time in the congruent and the baseline condition are practically the same. The variance
+for these two conditions are also very similar. The incongruent coondition shows the greatest reaction time, as expected. It also shows the greatest variance.
 
 A linear model can determine whether there is a significant difference in reaction time between participants
 who were standing vs sitting. 
@@ -75,7 +75,6 @@ summary(stroop_phase)
 ```
 
 Model reveals no significant difference in reaction time between those standing and those sitting (p > 0.05).
-
 We can then look on the influence on whether starting trials sitting or standing can have influence reaction time.
 
 ```{r}
@@ -96,7 +95,7 @@ Spotify <- read_csv("All-About-the-Music/Spotifier/data/spotify_cleaned.csv")
 First we can start by removing all information that is not relevant to our replication.
 
 ```{r, message=FALSE, warning=FALSE}
-Spotify <- select(Spotify, -key, -mode, -speechiness, -instrumentalness, -liveness, -time_signature, -duration_sec, -X1, -"Track Name", -Artist, -Streams)
+Spotify <- select(Spotify, -time_signature, -X1, -"Track Name", -Artist, -Streams)
 ```
 
 Now we can run a PCA.
@@ -107,21 +106,24 @@ summary(PCA)
 fviz_pca_var(PCA)
 ```
 
-What we find is that 99.9 (practically all) of the variance is explaind by the first 2 dimensions, confirming the findings from the original study.
-Tempo is explaining ~99.5% of the variance in this data - tempo seems to be the most important factor when it comes to music popularity.
-The other factors are not as important. The second most important is Loudness which explains ~0.5% of the variance. 
-Interestingly, the data noted that 99% of the variance can be explained with two dimensions. However, in this dataset, it only required
-the first dimension to explain 99%+ variance. 
+What we find is that 63% of the variance is being explained by the first dimension (Duration_sec), and an additional 35.5% of the variance is being explained by the second dimension (Tempo). ~99.3% of the variance is being explained by the first two dimensions.
 
-One problem is not standardised, which could be why tempo is explaining majority of the variance. We can standardise all the variable and rurun the PCA.
+One problem is that the variables are not standardised, which could be why duration_sec is explaining majority of the variance. We can standardise all the variable and rurun the PCA.
 
 ```{r message=FALSE, warning=FALSE} 
-Spotify_s <- mutate(Spotify, valence = scale(valence),
+Spotify_s <- mutate(Spotify, 
+valence = scale(valence),
 acousticness = scale(acousticness),
 loudness = scale(loudness),
 energy = scale(energy),
 danceability = scale(danceability),
-tempo = scale(tempo))
+tempo = scale(tempo),
+duration_sec = scale(duration_sec),
+key = scale(key), 
+mode = scale(mode),
+speechiness = scale(speechiness),
+instrumentalness = scale(instrumentalness),
+liveness = scale(liveness))
 ```
 
 ```{r}
@@ -130,8 +132,8 @@ summary(PCA_s)
 fviz_pca_var(PCA_s)
 ```
 
-We now observe much more variance attributed to different dimensions. The first dimension (predominantly Tempo) only explains 38% of the variance,
-whereas the second dimension (predominantly Loudness) explains 24%. To get around the same variance as before (~99%), we would need 5 dimensions. 
+We now observe much more variance attributed to different dimensions. The first dimension (predominantly Tempo) only explains 19.8% of the variance,
+whereas the second dimension (predominantly Loudness) explains 13.3%. To get around the same variance as before (~99%), we would need 11 dimensions. 
 
 
 
