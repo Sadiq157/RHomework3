@@ -22,4 +22,6 @@ absolutely everything.
 - 28/02/21 -
 
 Turns out spotify question was wrong. Scrapped it all. Imported
-the data we were meant to use.
+the data we were meant to use and flushed out all irrelevant variables.
+Then, I ran the PCA which looks a lot more promising.
+Ready to submit(?)

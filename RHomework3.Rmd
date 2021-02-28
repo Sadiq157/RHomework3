@@ -95,7 +95,7 @@ Spotify <- read_csv("All-About-the-Music/Spotifier/data/spotify_cleaned.csv")
 
 First we can start by removing all information that is not relevant to our replication.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 Spotify <- select(Spotify, -key, -mode, -speechiness, -instrumentalness, -liveness, -time_signature, -duration_sec, -X1, -"Track Name", -Artist, -Streams)
 ```
 
@@ -104,12 +104,34 @@ Now we can run a PCA.
 ```{r}
 PCA <- prcomp(Spotify)
 summary(PCA)
+fviz_pca_var(PCA)
 ```
 
 What we find is that 99.9 (practically all) of the variance is explaind by the first 2 dimensions, confirming the findings from the original study.
+Tempo is explaining ~99.5% of the variance in this data - tempo seems to be the most important factor when it comes to music popularity.
+The other factors are not as important. The second most important is Loudness which explains ~0.5% of the variance. 
+Interestingly, the data noted that 99% of the variance can be explained with two dimensions. However, in this dataset, it only required
+the first dimension to explain 99%+ variance. 
 
+One problem is not standardised, which could be why tempo is explaining majority of the variance. We can standardise all the variable and rurun the PCA.
 
+```{r message=FALSE, warning=FALSE} 
+Spotify_s <- mutate(Spotify, valence = scale(valence),
+acousticness = scale(acousticness),
+loudness = scale(loudness),
+energy = scale(energy),
+danceability = scale(danceability),
+tempo = scale(tempo))
+```
 
+```{r}
+PCA_s <- prcomp(Spotify_s)
+summary(PCA_s)
+fviz_pca_var(PCA_s)
+```
+
+We now observe much more variance attributed to different dimensions. The first dimension (predominantly Tempo) only explains 38% of the variance,
+whereas the second dimension (predominantly Loudness) explains 24%. To get around the same variance as before (~99%), we would need 5 dimensions. 
 
 
 
