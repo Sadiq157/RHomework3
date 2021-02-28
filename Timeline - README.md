@@ -18,3 +18,8 @@ Questionable results - could be wrong(?)
 
 Grammatical checks. Fixed rMarkdown output so it doesn't show 
 absolutely everything.
+
+- 28/02/21 -
+
+Turns out spotify question was wrong. Scrapped it all. Imported
+the data we were meant to use.

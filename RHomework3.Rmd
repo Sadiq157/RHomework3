@@ -46,7 +46,7 @@ stroop <- stroop[,-11]
 
 ```{r message = FALSE}
 stroop %>%
-group_by(phase, congruency) %>%
+group_by(phase, congruency, subject) %>%
 summarise(
 rt = mean(rt),
 n = n(),
@@ -58,6 +58,13 @@ By grouping by phase (sitting or standing) and congruency (baseline, congruent, 
 we can look at the mean reaction time in each group. What we find is the incongruent group 
 take longer to react than the congruent and baseline condition. There doesn't appear to be a significant
 effect of phase on reaction time, congruency, or proportion correct.
+
+```{r}
+boxplot(rt ~ congruency, summary_stroop)
+```
+
+The boxplot shows that the on average, the reaction time in the congruent and the baseline condition are practically the same.
+Incongruent shows the greatest reaction time, as expected. The variance across the three condition appears similar.
 
 A linear model can determine whether there is a significant difference in reaction time between participants
 who were standing vs sitting. 
@@ -82,50 +89,24 @@ The replication study did however, find a significant difference in the stroop e
 sitting down or standing up. Participants showed significant lower reaction time if they started sitting (rt = 819) 
 compared to participants who started standing (rt = 819 + 22 = 841; p < .05).
 
-```{r, warning = FALSE, message = FALSE}
-Spotify <- read_csv("regional-global-daily-latest.csv")
+```{r, message=FALSE, warning=FALSE}
+Spotify <- read_csv("All-About-the-Music/Spotifier/data/spotify_cleaned.csv")
 ```
 
-Data is very messy - we can start by elimating the URL. 
+First we can start by removing all information that is not relevant to our replication.
 
 ```{r}
-Spotify <- Spotify %>%
-  select(-X5)
+Spotify <- select(Spotify, -key, -mode, -speechiness, -instrumentalness, -liveness, -time_signature, -duration_sec, -X1, -"Track Name", -Artist, -Streams)
 ```
 
-We can then rename the columns to something more useful than X1, X2 ...
+Now we can run a PCA.
 
 ```{r}
-names(Spotify)[1] <- "Position"
-names(Spotify)[2] <- "Track Name"
-names(Spotify)[3] <- "Artist"
-names(Spotify)[4] <- "Streams"
-```
-
-Finally, we can remove the first row as it simply repeats our column names
-
-```{r}
-Spotify <- Spotify[-1,]
-```
-
-The Spotify data is currently all categorical. To do a PCA, we would need to change our categories of interest to numeric.
-We would also need to remove categories which are not of interest.
-
-```{r}
-Spotify <- select(Spotify, -Artist, -'Track Name')
-Spotify <- mutate(Spotify, Position = as.numeric(Position), 
-                  Streams = as.numeric(Streams))
 PCA <- prcomp(Spotify)
 summary(PCA)
-fviz_pca_var(PCA)
 ```
 
-What we can see is that Position explains 100% of the variance. The writer is correct, as 99% of the variance can be explained with two
-dimensions, but at the same time, the author is wrong as it only required one dimension to explain 100% of the variance.
-The second dimension (Streams) did not contribute to the variance.
-
-
-
+What we find is that 99.9 (practically all) of the variance is explaind by the first 2 dimensions, confirming the findings from the original study.
 
 
 
