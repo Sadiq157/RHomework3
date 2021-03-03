@@ -11,20 +11,22 @@ library(tidyverse)
 library(factoextra)
 ```
 
+# 2 Stoop, standing up, or sitting down
+
 ```{r message = FALSE, warning = FALSE}
 stroop <- read_csv("stroop_standing_data.csv")
 ```
 
 The data in it's current form is *very* messy.
 We can start by mutating reaction time to a numerical value, not a categorical value.
-By doing so, we can  omit all data where RT was not recorded (rt = FALSE)
+By doing so, we can omit all data where RT was not recorded (rt = FALSE). We cannot analyse reaction time is there are FALSE data.
 
 ```{r, warning = FALSE}
 stroop <- mutate(stroop, rt = as.numeric(rt))
 stroop <- filter(stroop, rt > 0)
 ```
 
-Then, we omit all practice trials.
+Then, we omit all practice trials as these are not relevant for our analysis.
 
 ```{r}
 stroop <- filter(stroop, phase != "practice")
@@ -37,12 +39,14 @@ stroop <- filter(stroop, correct < 2)
 ```
 
 Finally, by changing the variable X11 to numeric (from logical) we can see that it is simply a copy of RT.
-We can proceed by omitting the whole column as it is unnecassary. We now have uncluttered, understandable data.
+We can proceed by omitting the whole column as it is essentially a duplicate and is not unnecassary. We now have uncluttered, understandable data.
 
 ```{r}
 stroop <- mutate(stroop, X11 = as.numeric(X11))
 stroop <- stroop[,-11]
 ```
+
+By grouping by phase and congruency, we can extract mean reaction times, as well as the proportion of correct trials in each group.
 
 ```{r message = FALSE}
 stroop %>%
@@ -54,51 +58,58 @@ proportion = mean(correct)) %>%
 glimpse() -> summary_stroop
 ```
 
-By grouping by phase (sitting or standing) and congruency (baseline, congruent, and incongruent), 
-we can look at the mean reaction time in each group. What we find is the incongruent group 
-take longer to react than the congruent and baseline condition. There doesn't appear to be a significant
-effect of phase on reaction time, congruency, or proportion correct.
+As expected, we find that the incongruent condition (e.g., stimuli such as $\color{blue}{\text{red}}$) take longer to react to than the congruent ($\color{red}{\text{red}}$) and the baseline condition. At first glance at the numbers, there doesn't appear to be a significant
+effect for phase or condition on reaction time or proportion correct.
 
 ```{r}
 boxplot(rt ~ congruency, stroop)
 ```
 
-The boxplot shows that the on average, the reaction time in the congruent and the baseline condition are practically the same. The variance
+The boxplot shows that on average, the reaction time in the congruent and the baseline condition are practically the same. The variance
 for these two conditions are also very similar. The incongruent coondition shows the greatest reaction time, as expected. It also shows the greatest variance.
 
-A linear model can determine whether there is a significant difference in reaction time between participants
-who were standing vs sitting. 
+A linear model can determine whether there is a significant difference for phase on reaction time.
 
 ```{r}
 stroop_phase <- lm(rt ~ phase, stroop)
 summary(stroop_phase)
 ```
 
-Model reveals no significant difference in reaction time between those standing and those sitting (p > 0.05).
-We can then look on the influence on whether starting trials sitting or standing can have influence reaction time.
+Model reveals no significant difference in reaction time between those standing and those sitting (*p* > 0.05).
+What about the effect of congruency on reaction time?
+
+```{r}
+stroop_congruency <- lm(rt ~ congruency, stroop)
+summary(stroop_congruency)
+```
+
+As expected, only the difference between the incongruent and baseline condition were significant. (*p* < .05)
+Finally, We can then look at the influence on whether starting trials sitting or standing can have influence reaction time.
 
 ```{r}
 stroop_condition <- lm(rt ~ condition, stroop)
 summary(stroop_condition)
 ```
 
+Participants showed a significantly lower reaction time if they started sitting (rt = 819) compared to participants who started standing (rt = 841; *p* < .05).
 
-Linking this back to the original study which found a smaller stroop effect when participants performed the task standing than when sitting (i.e, greater stroop effect when sitting than when standing, so greater reaction time when sitting versus standing), the replication study found no significant difference in the stroop effect whether participants were standing or when they were sitting.
-The replication study did however, find a significant difference in the stroop effect depending on whether participants started
-sitting down or standing up. Participants showed significant lower reaction time if they started sitting (rt = 819) 
-compared to participants who started standing (rt = 819 + 22 = 841; p < .05).
+Linking this back to the original study which found a smaller stroop effect when participants performed the task standing (i.e, greater stroop effect when sitting; greater reaction time when sitting), the replication study found no significant difference in the stroop effect whether participants were standing or when they were sitting (*p* = 0.64)
+The replication study did however, find a significant difference in the stroop effect depending on whether participants *started*
+sitting down or standing up. It also found that those in the incongruent trials took significantly longer to react than those in the baseline and congruent condition (*p* < .05)
+
+# 3 The dimensions of popular music
 
 ```{r, message=FALSE, warning=FALSE}
 Spotify <- read_csv("All-About-the-Music/Spotifier/data/spotify_cleaned.csv")
 ```
 
-First we can start by removing all information that is not relevant to our replication.
+First we can start by removing all information that is not relevant to our replication. By referring to the article, we can see which variables they selected for their PCA.
 
 ```{r, message=FALSE, warning=FALSE}
 Spotify <- select(Spotify, -time_signature, -X1, -"Track Name", -Artist, -Streams)
 ```
 
-Now we can run a PCA.
+Now we can run the PCA.
 
 ```{r}
 PCA <- prcomp(Spotify)
@@ -106,9 +117,10 @@ summary(PCA)
 fviz_pca_var(PCA)
 ```
 
-What we find is that 63% of the variance is being explained by the first dimension (Duration_sec), and an additional 35.5% of the variance is being explained by the second dimension (Tempo). ~99.3% of the variance is being explained by the first two dimensions.
+Like the original study, we find that 63% of the variance is being explained by the first dimension (Duration_sec), and an additional 35.5% of the variance is being explained by the second dimension (Tempo). ~99.3% of the variance is being explained by the first two dimensions.
+The analysis was originally conducted to see what makes some music more popular than others. By breaking down songs into 24 attributes, we can see what qualites are found in the most popular songs. We can conclude that duration_sec and tempo is also two very important factors for what makes a song so popular. 
 
-One problem is that the variables are not standardised, which could be why duration_sec is explaining majority of the variance. We can standardise all the variable and rurun the PCA.
+What happens when we standardise the variables? One problem is that the variables were not standardised in the original analysis, which could be why duration_sec is explaining majority of the variance (as well as tempo). We can standardise all the variable and rurun the PCA.
 
 ```{r message=FALSE, warning=FALSE} 
 Spotify_s <- mutate(Spotify, 
@@ -132,8 +144,7 @@ summary(PCA_s)
 fviz_pca_var(PCA_s)
 ```
 
-We now observe much more variance attributed to different dimensions. The first dimension (predominantly Tempo) only explains 19.8% of the variance,
-whereas the second dimension (predominantly Loudness) explains 13.3%. To get around the same variance as before (~99%), we would need 11 dimensions. 
+We now observe much more variance attributed to different dimensions. The first dimension (predominantly Tempo) only explains 19.8% of the variance,whereas the second dimension (predominantly Loudness) explains 13.3%. To get around the same variance as before (~99%), we would need 11 dimensions. 
 
 
 

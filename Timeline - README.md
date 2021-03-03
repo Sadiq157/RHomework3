@@ -25,3 +25,8 @@ Turns out spotify question was wrong. Scrapped it all. Imported
 the data we were meant to use and flushed out all irrelevant variables.
 Then, I ran the PCA which looks a lot more promising.
 Ready to submit(?)
+
+- 03/03/21 - 
+
+Made sure everything made sense. Added a little bit more code
+which I felt was necassary. Made sure I answered every question explicitly.
