@@ -459,7 +459,7 @@ summary(stroop_condition)</code></pre>
 </div>
 <div id="the-dimensions-of-popular-music" class="section level1">
 <h1>3 The dimensions of popular music</h1>
-<pre class="r"><code>Spotify &lt;- read_csv(&quot;All-About-the-Music/Spotifier/data/spotify_cleaned.csv&quot;)</code></pre>
+<pre class="r"><code>Spotify &lt;- read_csv(&quot;spotify_cleaned.csv&quot;)</code></pre>
 <p>First we can start by removing all information that is not relevant to our replication. By referring to the article, we can see which variables they selected for their PCA.</p>
 <pre class="r"><code>Spotify &lt;- select(Spotify, -time_signature, -X1, -&quot;Track Name&quot;, -Artist, -Streams)</code></pre>
 <p>Now we can run the PCA.</p>

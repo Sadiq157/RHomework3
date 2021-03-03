@@ -100,7 +100,7 @@ sitting down or standing up. It also found that those in the incongruent trials 
 # 3 The dimensions of popular music
 
 ```{r, message=FALSE, warning=FALSE}
-Spotify <- read_csv("All-About-the-Music/Spotifier/data/spotify_cleaned.csv")
+Spotify <- read_csv("spotify_cleaned.csv")
 ```
 
 First we can start by removing all information that is not relevant to our replication. By referring to the article, we can see which variables they selected for their PCA.

@@ -30,3 +30,8 @@ Ready to submit(?)
 
 Made sure everything made sense. Added a little bit more code
 which I felt was necassary. Made sure I answered every question explicitly.
+
+- 03/03/21 - 
+
+Did not want to lose marks to read_csv errors, so I made it
+easier to read by shortening the lenght of the code
